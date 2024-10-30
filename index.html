@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Website</title>
+</head>
+
+<body>
+
+  <!-- Header with marquee and navigation links -->
+  <header>
+    <h1>My Portfolio</h1>
+    <marquee>Welcome to My Personal Portfolio Website!</marquee>
+    <nav>
+      <a href="#about">About Me</a> |
+      <a href="#skills">Skills</a> |
+      <a href="#projects">Projects</a> |
+      <a href="#contact">Contact Me</a>
+    </nav>
+    <hr>
+  </header>
+
+  <!-- About Me section -->
+  <section id="about">
+    <h2>About Me</h2>
+    <p>
+      Hello! I am <b>John Doe</b>, a passionate web developer with experience in creating dynamic and responsive
+      websites.
+    </p>
+    <p>
+      <em>Experience:</em> I specialize in <u>HTML</u>, <i>CSS</i>, and <strong>JavaScript</strong>.
+    </p>
+    <p>
+      Some of my hobbies include:
+    </p>
+    <ol>
+      <li>Programming</li>
+      <li>Reading Tech Blogs</li>
+      <li>Playing Video Games</li>
+    </ol>
+    <hr>
+  </section>
+
+  <!-- Skills section with lists and table -->
+  <section id="skills">
+    <h2>Skills</h2>
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>JavaScript</li>
+    </ul>
+    <h3>Technical Skills</h3>
+    <table border="1">
+      <tr>
+        <th>Skill</th>
+        <th>Proficiency</th>
+      </tr>
+      <tr>
+        <td>HTML</td>
+        <td>Advanced</td>
+      </tr>
+      <tr>
+        <td>CSS</td>
+        <td>Intermediate</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td>Advanced</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Projects section with image, audio, and video -->
+  <section id="projects">
+    <h2>Projects</h2>
+    <h3>Project 1: Responsive Web Design</h3>
+    <img
+      src="https://yt3.googleusercontent.com/hJbaOXN06yeg4FWwU0BigQ0NT3leNjIPupQHOQExnxIYhjuXR1o3oT8WRSWDjZm4f-UvMeRRvA=s900-c-k-c0x00ffffff-no-rj"
+      alt="Project 1 Screenshot" width="300">
+    <p>This project focuses on creating responsive layouts using CSS and HTML.</p>
+
+    <h3>Project 2: Interactive Portfolio</h3>
+    <audio controls>
+      <source src="./intro-audio.mp3" type="audio/mpeg">
+      Your browser does not support the audio tag.
+    </audio>
+
+    <h3>Project 3: Video Introduction</h3>
+    <video controls width="300">
+      <source src="/32151280.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </section>
+
+  <!-- Contact Me section with form and various input types -->
+  <section id="contact">
+    <h2>Contact Me</h2>
+    <form action="/submit_form" method="post">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required><br><br>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required><br><br>
+
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" name="phone" required><br><br>
+
+      <label for="dob">Date of Birth:</label>
+      <input type="date" id="dob" name="dob"><br><br>
+
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio"></textarea><br><br>
+
+      <label for="portfolio">Upload Portfolio:</label>
+      <input type="file" id="portfolio" name="portfolio"><br><br>
+
+      <fieldset>
+        <legend>Preferred Contact Method</legend>
+        <input type="radio" id="contact-email" name="contact_method" value="email">
+        <label for="contact-email">Email</label><br>
+
+        <input type="radio" id="contact-phone" name="contact_method" value="phone">
+        <label for="contact-phone">Phone</label><br>
+      </fieldset>
+
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <!-- Footer with iframe -->
+  <footer>
+    <h3>Find Me Here:</h3>
+
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3401.7481876507536!2d74.34529420986107!3d31.503604674114165!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391905141ff0496f%3A0xfd9f0d349740c080!2sAl%20Hafeez%20Executive!5e0!3m2!1sen!2s!4v1730272560679!5m2!1sen!2s"
+      width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </footer>
+
+</body>
+
+</html>

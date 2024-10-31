@@ -3,6 +3,7 @@ const app = express();
 const items = require("./MOCK_DATA.json");
 const port = 8000;
 const fs = require('fs');
+const uid = require('uuid');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -10,10 +11,10 @@ app.use(express.json());
 
 
 
-app.post('/post', (req, res) => {
+app.post('api/item/get', (req, res) => {
     const { name, prize } = req.body;
     const newItem = {
-        id:  new Date().valueOf(),
+        id:  uid.v4(),
         name,
         prize
     }
@@ -31,14 +32,14 @@ app.listen(port, () => {
 });
 
 
-app.get('/get', (req, res) => {
+app.get('api/item/get', (req, res) => {
     return res.json({
         message: "All items retrieved",
         items
     });
 });
 
-app.delete('/delete/:id', (req, res) => {
+app.delete('api/item/delete/:id', (req, res) => {
     const id = req.params.id;
 
     const item = items.find(item => item.id === parseInt(id));
@@ -55,9 +56,9 @@ app.delete('/delete/:id', (req, res) => {
         }
         return res.status(200).send({message: "Item Delete Successfully"})
     });
-})
+});
 
-app.patch('/patch/:id', (req, res) => {
+app.patch('api/item/patch/:id', (req, res) => {
     const {name, prize} = req.body;
     const id = req.params.id;
     const item = items.find(item => item.id === parseInt(id));
@@ -79,7 +80,27 @@ app.patch('/patch/:id', (req, res) => {
         }
         return res.status(200).send({message: "Item Patch Successfully"})
     });
+});
+
+app.post('/', (req, res) => {
+    const { name, created_at, updated_at } = req.body;
+    const newCat = {
+        name,
+        created_at,
+        updated_at,
+    }
+    items.push(newCat);
+    fs.writeFile("./MOCK_DATA.json", JSON.stringify(items), (err) => {
+        if (err) {
+            console.log(err);
+        }
+
+        return res.status(200).send({ message: "Item Inserted Successfully", item: newCat})
+    });
 })
+
+
+
 
 
 

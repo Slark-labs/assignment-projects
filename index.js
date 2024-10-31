@@ -118,7 +118,21 @@ app.get('/api/item/category/get', (req, res) => {
         message: "All items retrieved",
         cat
     })
-})
+});
+
+app.get('/api/item/category/get/:id', (req, res) => {
+    const id = req.params.id;
+    const category = cat.find(item => item.id === id);
+    if (!category) {
+        return res.status(404).send({message: "Not Found"});
+    }
+    return res.json({
+        cat
+    });
+
+});
+
+
 
 
 

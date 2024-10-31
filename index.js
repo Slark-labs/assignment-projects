@@ -96,12 +96,12 @@ app.patch('/api/item/patch/:id', (req, res) => {
 });
 
 app.post('/api/item/category/post', (req, res) => {
-    const { name, updated_at } = req.body;
+    const { name} = req.body;
     const newCat = {
         id: uid.v4(),
         name,
         created_at: new Date(),
-        updated_at,
+        updated_at: ""
     }
     cat.push(newCat);
     fs.writeFile("./CAT_MOCK_DATA.json", JSON.stringify(cat), (err) => {
@@ -127,10 +127,50 @@ app.get('/api/item/category/get/:id', (req, res) => {
         return res.status(404).send({message: "Not Found"});
     }
     return res.json({
-        cat
+        category
     });
 
 });
+
+app.patch('/api/item/category/patch/:id', (req, res) => {
+    const id = req.params.id;
+    const { name,} = req.body;
+    const category = cat.find(item => item.id === id);
+    if (!category) {
+        return res.status(404).send({message: "Item Not Found"});
+
+    }
+    if (category) {
+        category.name = name;
+        category.updated_at = new Date();
+
+    }
+
+    fs.writeFile("./CAT_MOCK_DATA.json", JSON.stringify(cat), (err) => {
+        if (err) {
+            console.log(err);
+        }
+
+        return res.status(200).send({ message: "Item Patch Successfully",})
+    });
+
+})
+app.delete('/api/item/category/delete/:id', (req, res) => {
+    const id = req.params.id;
+    const category = cat.find(item => item.id === id);
+    if (!category) {
+        return res.status(404).send({message: "Item Not Found"});
+    }
+    cat.splice(category, 1);
+    fs.writeFile("./CAT_MOCK_DATA.json", JSON.stringify(cat), (err) => {
+        if (err) {
+            console.log(err);
+        }
+
+        return res.status(200).send({ message: "Item Delete Successfully",})
+    });
+
+})
 
 
 

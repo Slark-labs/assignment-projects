@@ -111,6 +111,13 @@ app.post('/api/item/category/post', (req, res) => {
 
         return res.status(200).send({ message: "Item Inserted Successfully", item: newCat})
     });
+});
+
+app.get('/api/item/category/get', (req, res) => {
+    return res.json({
+        message: "All items retrieved",
+        cat
+    })
 })
 
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const items = require("./MOCK_DATA.json");
+const cat = require("./CAT_MOCK_DATA.json");
 const port = 8000;
 const fs = require('fs');
 const uid = require('uuid');
@@ -8,10 +9,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
+app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
+});
 
 
-
-app.post('api/item/get', (req, res) => {
+app.post('/api/item/post', (req, res) => {
     const { name, prize } = req.body;
     const newItem = {
         id:  uid.v4(),
@@ -27,27 +30,37 @@ app.post('api/item/get', (req, res) => {
         return res.status(200).send({ message: "Item Inserted Successfully", item: newItem})
     });
 });
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
-});
 
 
-app.get('api/item/get', (req, res) => {
+
+app.get('/api/item/get', (req, res) => {
     return res.json({
         message: "All items retrieved",
         items
     });
 });
 
-app.delete('api/item/delete/:id', (req, res) => {
+app.get('/api/item/get/:id', (req, res) => {
+    const id = req.params.id;
+    const item = items.find(item => item.id === id);
+    if (!item) {
+        return res.status(404).send({message: "Not Found"});
+    }
+    return res.json({
+        message: "All items retrieved",
+        item
+    });
+
+})
+
+app.delete('/api/item/delete/:id', (req, res) => {
     const id = req.params.id;
 
-    const item = items.find(item => item.id === parseInt(id));
+    const item = items.find(item => item.id === id);
     if (!item) {
         return res.status(404).send({message: "Item Not Found"});
 
     }
-    console.log(item);
     items.splice(item, 1);
 
     fs.writeFile("./MOCK_DATA.json", JSON.stringify(items), (err) => {
@@ -58,10 +71,10 @@ app.delete('api/item/delete/:id', (req, res) => {
     });
 });
 
-app.patch('api/item/patch/:id', (req, res) => {
+app.patch('/api/item/patch/:id', (req, res) => {
     const {name, prize} = req.body;
     const id = req.params.id;
-    const item = items.find(item => item.id === parseInt(id));
+    const item = items.find(item => item.id === id);
     if (!item) {
         console.log(item);
         return res.status(404).send({message: "Item Not Found"});
@@ -82,15 +95,16 @@ app.patch('api/item/patch/:id', (req, res) => {
     });
 });
 
-app.post('/', (req, res) => {
-    const { name, created_at, updated_at } = req.body;
+app.post('/api/item/category/post', (req, res) => {
+    const { name, updated_at } = req.body;
     const newCat = {
+        id: uid.v4(),
         name,
-        created_at,
+        created_at: new Date(),
         updated_at,
     }
-    items.push(newCat);
-    fs.writeFile("./MOCK_DATA.json", JSON.stringify(items), (err) => {
+    cat.push(newCat);
+    fs.writeFile("./CAT_MOCK_DATA.json", JSON.stringify(cat), (err) => {
         if (err) {
             console.log(err);
         }

@@ -15,7 +15,7 @@ router.post('/', (req, res) => {
         updated_at: ""
     }
     cats.push(newCat);
-    fs.writeFile("./CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
+    fs.writeFile("./categories/CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
         if (err) {
             console.log(err);
         }
@@ -23,7 +23,6 @@ router.post('/', (req, res) => {
         return res.status(200).send({ message: "Item Inserted Successfully", item: newCat})
     });
 });
-
 router.get('/', (req, res) => {
     return res.json({
         message: "All items retrieved",
@@ -33,12 +32,12 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const category = cats.find(item => item.id === id);
-    if (!category) {
+    const categoryIndex = cats.find(item => item.id === id);
+    if (!categoryIndex) {
         return res.status(404).send({message: "Not Found"});
     }
     return res.json({
-        category
+        categoryIndex
     });
 
 });
@@ -46,18 +45,18 @@ router.get('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     const { name,} = req.body;
-    const category = cats.find(item => item.id === id);
-    if (!category) {
+    const categoryIndex = cats.find(item => item.id === id);
+    if (!categoryIndex) {
         return res.status(404).send({message: "Item Not Found"});
 
     }
-    if (category) {
-        category.name = name;
-        category.updated_at = new Date();
+    if (categoryIndex) {
+        categoryIndex.name = name;
+        categoryIndex.updated_at = new Date();
 
     }
 
-    fs.writeFile("./CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
+    fs.writeFile("./categories/CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
         if (err) {
             console.log(err);
         }
@@ -68,12 +67,12 @@ router.put('/:id', (req, res) => {
 })
 router.delete('/:id', (req, res) => {
     const id = req.params.id;
-    const category = cats.find(item => item.id === id);
-    if (!category) {
+    const categoryIndex = cats.findIndex(item => item.id === id);
+    if (!categoryIndex) {
         return res.status(404).send({message: "Item Not Found"});
     }
-    cats.splice(category, 1);
-    fs.writeFile("./CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
+    cats.splice(categoryIndex, 1);
+    fs.writeFile("./categories/CATs_MOCK_DATA.json", JSON.stringify(cats), (err) => {
         if (err) {
             console.log(err);
         }

@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
         prize
     }
     items.push(newItem);
-    fs.writeFile("./ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
+    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
         if (err) {
             console.log(err);
         }
@@ -34,13 +34,13 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const item = items.find(item => item.id === id);
-    if (!item) {
+    const itemIndex = items.find(item => item.id === id);
+    if (!itemIndex && itemIndex !== 0) {
         return res.status(404).send({message: "Not Found"});
     }
     return res.json({
-        message: "All items retrieved",
-        item
+        message: " Item retrieved",
+        itemIndex
     });
 
 })
@@ -48,14 +48,19 @@ router.get('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     const id = req.params.id;
 
-    const item = items.find(item => item.id === id);
-    if (!item) {
+    const itemIndex = items.findIndex(item => item.id === id);
+
+    console.log({ itemIndex });
+    if (!itemIndex && itemIndex !== 0) {
         return res.status(404).send({message: "Item Not Found"});
 
     }
-    items.splice(item, 1);
+    console.log({items})
+    items.splice(itemIndex, 1);
 
-    fs.writeFile("./ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
+    console.log({items})
+
+    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
         if (err) {
             console.log(err);
         }
@@ -66,20 +71,20 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     const {name, prize} = req.body;
     const id = req.params.id;
-    const item = items.find(item => item.id === id);
-    if (!item) {
-        console.log(item);
+    const itemIndex = items.find(item => item.id === id);
+    if (!itemIndex && itemIndex !== 0) {
+        console.log(itemIndex);
         return res.status(404).send({message: "Item Not Found"});
 
     }
     if (name) {
-        item.name = name;
+        itemIndex.name = name;
 
     }
     if (prize) {
-        item.prize = prize;
+        itemIndex.prize = prize;
     }
-    fs.writeFile("./ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
+    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
         if (err) {
             console.log(err);
         }

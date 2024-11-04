@@ -4,14 +4,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { error } from 'console';
 import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['authorization'];
-    console.log(authHeader);
+
     if (!authHeader) {
       throw new UnauthorizedException('Token not found in headers');
     }
@@ -24,6 +23,6 @@ export class AuthGuard implements CanActivate {
       request.user = token;
       return true;
     } catch (error) {}
-    console.log(error);
+    throw new UnauthorizedException('Invalid token');
   }
 }

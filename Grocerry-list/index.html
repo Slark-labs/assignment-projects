@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grocery List CRUD</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<section class="section-center">
+  <form class="form" id="grocery-form">
+    <h3>Grocery List</h3>
+    <div class="form-control">
+      <label for="grocery">Item Name:</label>
+      <input type="text" name="item" id="grocery" placeholder="e.g. eggs" required />
+    </div>
+    <div class="form-control">
+      <label for="prize">Item Prize:</label>
+      <input type="text" name="prize" id="prize" placeholder="e.g. 8000" required />
+    </div>
+    <button type="submit" class="submit-btn">Add Item</button>
+  </form>
+
+  <div class="grocery-container" id="grocery-container">
+    <ul class="grocery-list"></ul>
+  </div>
+
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

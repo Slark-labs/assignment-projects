@@ -1,14 +1,19 @@
 const express = require('express');
+const cors = require('cors');
+const itemsRouter = require('./items/items');
+const categoryRouter = require('./categories/categories');
 const app = express();
 
-app.use(express.urlencoded({ extended: false }));
+app.use(cors())
+
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-const itemsRouter = require('./items/items');
+
 app.use('/api/items', itemsRouter);
 
-const categoryRouter = require('./categories/categories');
+
 app.use('/api/categories', categoryRouter);
 
 

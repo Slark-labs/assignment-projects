@@ -25,12 +25,24 @@ router.post('/', (req, res) => {
 
 
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+    const totalItems = items.length;
+    const page = req.query.page * 1 || 1;
+    console.log(page);
+    const limit = req.query.limit * 1 || 10;
+    console.log(limit);
+    const skip = (page - 1) * limit ;
+    console.log(skip);
+    const paginatedItems = items.slice(skip, skip + limit);
     return res.json({
         message: "All items retrieved",
-        items
+        totalItems,
+        items : paginatedItems
     });
+
 });
+
+
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;

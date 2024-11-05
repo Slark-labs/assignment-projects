@@ -1,13 +1,14 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { UserDTO } from 'dto/user.dto';
-import { Response } from 'express';
-import { RegisterUser } from 'services/user.service';
+import { response, Response } from 'express';
+import { LoginUser, RegisterUser } from 'services/user.service';
 import { Token } from 'services/auth.service';
 
 @Controller('api/user')
 export class UserController {
   constructor(
     private user: RegisterUser,
+    private LoginUser: LoginUser,
     private token: Token,
   ) {}
   @Post()
@@ -22,10 +23,30 @@ export class UserController {
     if (newUser) {
       const newToken = this.token.generateToken(newUser);
       return response.status(HttpStatus.CREATED).json({
-        message: 'success',
-        data: newUser,
-        token: newToken,
+        message: 'user created successfully',
+        success: true,
+        data: { token: newToken },
       });
     }
+  }
+  @Post('login')
+  async loginUser(@Body() dto: UserDTO, @Res() response: Response) {
+    // Validate user credentials
+    const user = await this.LoginUser.validateUser(dto);
+
+    if (!user) {
+      return response
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: 'Invalid Credentials', success: false });
+    }
+
+    // Generate token with validated user information
+    const token = this.token.generateToken({ email: dto.email });
+
+    return response.status(HttpStatus.OK).json({
+      message: 'User logged in successfully',
+      success: true,
+      data: { token },
+    });
   }
 }

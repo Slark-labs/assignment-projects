@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 
 interface Iuser {
-  name: string;
+
   email: string;
 }
 @Injectable()

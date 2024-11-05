@@ -32,15 +32,17 @@ export class CourseService {
 
   async courseExist(identifier: { title?: string; id?: string }) {
     let course = null;
-  
+
     if (identifier.title) {
-      course = await this.courseModel.findOne({ title: identifier.title }).exec();
+      course = await this.courseModel
+        .findOne({ title: identifier.title })
+        .exec();
     } else if (identifier.id) {
       course = await this.courseModel.findById(identifier.id).exec();
     }
-  
+
     return !!course;
-  } 
+  }
   async userExist(userId: string): Promise<boolean> {
     const user = await this.userModel.findById(userId).exec();
     return !!user; // Returns true if user exists, otherwise false
@@ -96,7 +98,7 @@ export class CourseService {
   }
   async deleteCourse(courseId: string): Promise<boolean> {
     const result = await this.courseModel.findByIdAndDelete(courseId);
-    return !!result; // Returns true if a course was deleted, false otherwise
+    return !!result;
   }
   async allCourses() {
     const all = await this.courseModel.find();

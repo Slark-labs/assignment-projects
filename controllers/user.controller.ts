@@ -3,15 +3,22 @@ import { UserDTO } from 'dto/user.dto';
 import { response, Response } from 'express';
 import { LoginUser, RegisterUser } from 'services/user.service';
 import { Token } from 'services/auth.service';
-
-@Controller('api/user')
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+@ApiTags('Auth')
+@Controller('api/auth')
 export class UserController {
   constructor(
     private user: RegisterUser,
     private LoginUser: LoginUser,
     private token: Token,
   ) {}
-  @Post()
+  @Post('register')
+  @ApiCreatedResponse({ description: 'Created User Object as a response' })
+  @ApiBadRequestResponse({ description: 'User cannot register try again!' })
   async registerUser(@Body() dto: UserDTO, @Res() response: Response) {
     const existUser = await this.user.existUser(dto.email);
     if (existUser) {

@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import {
   CourseDTO,
   DeleteUserDTO,
@@ -19,6 +20,7 @@ import { response, Response } from 'express';
 import { AuthGuard } from 'guards/auth.guard';
 import { CourseService } from 'services/course.service';
 
+@ApiBearerAuth()
 @Controller('api/course')
 export class CourseController {
   constructor(private course: CourseService) {}

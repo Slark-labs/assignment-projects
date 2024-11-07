@@ -51,13 +51,38 @@ const getItems = () => {
         })
         .catch(error => console.error(error));
 };
+// Set up initial page number and items per page
+let currentPage = 1;
+const itemsPerPage = 5; // Adjust as needed
 
-// Function to display items in the list
+// Function to fetch data (assuming it's from a JSON file or API)
+async function fetchData() {
+    try {
+        const response = await fetch('items/ITEMs_MOCK_DATA.json'); // Replace with actual path
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+        const itemData = await response.json();
+        DisplayData(itemData); // Initial data display with pagination
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Function to display paginated items in the list
 const DisplayData = (itemData) => {
-    const groceryList = groceryContainer.querySelector(".grocery-list");
+    const groceryList = document.querySelector(".grocery-list");
     groceryList.innerHTML = ''; // Clear existing items
 
-    itemData.forEach(item => {
+    // Calculate start and end indices for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    // Get only the items for the current page
+    const paginatedItems = itemData.slice(startIndex, endIndex);
+
+    // Display items for the current page
+    paginatedItems.forEach(item => {
         const listItem = document.createElement("li");
         listItem.className = "grocery-item";
 
@@ -78,7 +103,68 @@ const DisplayData = (itemData) => {
         `;
         groceryList.appendChild(listItem);
     });
+
+    // Update pagination controls
+    displayPaginationControls(itemData);
 };
+
+// Function to create and display pagination controls
+const displayPaginationControls = (itemData) => {
+    const paginationContainer = document.querySelector(".pagination-container");
+    paginationContainer.innerHTML = ''; // Clear existing controls
+
+    const totalItems = itemData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const maxPageButtons = 9; // Number of page buttons to display at a time
+
+    // Create "Previous" button
+    if (currentPage > 1) {
+        const prevButton = document.createElement("button");
+        prevButton.innerText = "Previous";
+        prevButton.onclick = () => {
+            currentPage--;
+            DisplayData(itemData); // Update displayed items
+        };
+        paginationContainer.appendChild(prevButton);
+    }
+
+    // Create page number buttons
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    // Adjust startPage if near the end
+    if (endPage === totalPages) {
+        startPage = Math.max(1, totalPages - maxPageButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.innerText = i;
+        pageButton.className = i === currentPage ? "active" : "";
+        pageButton.onclick = () => {
+            currentPage = i;
+            DisplayData(itemData); // Update displayed items
+        };
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Create "Next" button
+    if (currentPage < totalPages) {
+        const nextButton = document.createElement("button");
+        nextButton.innerText = "Next";
+        nextButton.onclick = () => {
+            currentPage++;
+            DisplayData(itemData); // Update displayed items
+        };
+        paginationContainer.appendChild(nextButton);
+    }
+};
+
+
+// Load and display the data with pagination
+fetchData();
+
+
 
 // Function to set item for editing
 const setEdit = (id, name, prize) => {
@@ -115,7 +201,6 @@ const updateItem = (id, name, prize) => {
             console.error('There was a problem with the fetch operation:', error);
         });
 };
-
 
 
 // Function to delete an item

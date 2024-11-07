@@ -26,19 +26,31 @@ router.post('/', (req, res) => {
 
 
 router.get('/', async (req, res) => {
-    const totalItems = items.length;
+
+
     const page = req.query.page * 1 || 1;
-    console.log(page);
     const limit = req.query.limit * 1 || 10;
-    console.log(limit);
+    const totalItems = items.length;
+    const totalPages = Math.ceil(totalItems / limit);
+
+
     const skip = (page - 1) * limit ;
-    console.log(skip);
+
     const paginatedItems = items.slice(skip, skip + limit);
+    if (paginatedItems <= totalPages) {
+        return res.status(404).json({ message : "Page Not Found" });
+
+
+    }
+
     return res.json({
         message: "All items retrieved",
         totalItems,
-        items : paginatedItems
+        totalPages,
+        items
     });
+
+
 
 });
 
@@ -62,15 +74,15 @@ router.delete('/:id', (req, res) => {
 
     const itemIndex = items.findIndex(item => item.id === id);
 
-    console.log({ itemIndex });
+
     if (!itemIndex && itemIndex !== 0) {
         return res.status(404).send({message: "Item Not Found"});
 
     }
-    console.log({items})
+
     items.splice(itemIndex, 1);
 
-    console.log({items})
+
 
     fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
         if (err) {

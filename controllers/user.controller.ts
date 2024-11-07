@@ -37,6 +37,9 @@ export class UserController {
     }
   }
   @Post('login')
+  
+  @ApiCreatedResponse({ description: 'Login User Object as a response' })
+  @ApiBadRequestResponse({ description: 'User cannot login try again!' })
   async loginUser(@Body() dto: UserDTO, @Res() response: Response) {
     // Validate user credentials
     const user = await this.LoginUser.validateUser(dto);

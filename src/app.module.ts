@@ -9,6 +9,7 @@ import { Course, courseSchema } from 'models/course.model';
 import { CourseService } from 'services/course.service';
 import { CourseController } from 'controllers/course.controller';
 import { Bcrypt, Token } from 'services/auth.service';
+import { UserSeedModule } from 'seeders/user/user.module';
 
 @Module({
   imports: [
@@ -17,9 +18,17 @@ import { Bcrypt, Token } from 'services/auth.service';
       { name: 'Course', schema: courseSchema },
     ]),
     MongooseModule.forRoot(`mongodb://127.0.0.1:27017/courses`),
+    UserSeedModule,
   ],
   controllers: [AppController, UserController, CourseController],
-  providers: [AppService, RegisterUser, CourseService, Token, LoginUser,Bcrypt],
+  providers: [
+    AppService,
+    RegisterUser,
+    CourseService,
+    Token,
+    LoginUser,
+    Bcrypt,
+  ],
   exports: [RegisterUser, Token],
 })
 export class AppModule {}

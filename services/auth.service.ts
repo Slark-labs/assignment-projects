@@ -22,4 +22,7 @@ export class Bcrypt {
   async hashPassword(password: string) {
     return bcrypt.hash(password, this.saltRounds);
   }
+  async comparePassword(password: string, hashedPassword: string) {
+    return bcrypt.compare(password, hashedPassword);
+  }
 }

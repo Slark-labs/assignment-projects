@@ -8,9 +8,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Course CRUD')
-    .setDescription('The cats API description')
+    .setDescription('The course API description')
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('courses')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

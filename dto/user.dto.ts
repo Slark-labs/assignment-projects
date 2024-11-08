@@ -9,13 +9,6 @@ import {
 } from 'class-validator';
 
 export class UserDTO {
-  // name
-  @ApiProperty({ example: 'john', description: 'User name' })
-  @IsString()
-  @MaxLength(20)
-  @IsNotEmpty({ message: 'name is required' })
-  @MinLength(2)
-  name: string;
   // email
   @ApiProperty({ example: 'john@gmail.com', description: 'User email' })
   @IsString()

@@ -4,7 +4,6 @@ import { User } from 'models/user.model';
 import { Model } from 'mongoose';
 import { Bcrypt } from './auth.service';
 interface IUserData {
-  name: string;
   email: string;
   password: string;
 }
@@ -31,13 +30,19 @@ export class RegisterUser {
 }
 @Injectable()
 export class LoginUser {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly bcryptService: Bcrypt,
+  ) {}
 
   async validateUser(credentials: IUserData) {
     const user = await this.userModel.findOne({
       email: credentials.email,
     });
-    return !!user;
+    return user;
+  }
+  async comparePassword(password: string, hashedPassword: string) {
+    return this.bcryptService.comparePassword(password, hashedPassword);
   }
   async loginUser(loginUserDTO: IUserData) {
     const user = await this.validateUser(loginUserDTO);

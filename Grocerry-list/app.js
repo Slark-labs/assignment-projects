@@ -123,16 +123,16 @@ const displayPaginationControls = (itemData) => {
         prevButton.innerText = "Previous";
         prevButton.onclick = () => {
             currentPage--;
-            DisplayData(itemData); // Update displayed items
+            DisplayData(itemData);
         };
         paginationContainer.appendChild(prevButton);
     }
 
-    // Create page number buttons
+
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
 
-    // Adjust startPage if near the end
+
     if (endPage === totalPages) {
         startPage = Math.max(1, totalPages - maxPageButtons + 1);
     }
@@ -143,12 +143,12 @@ const displayPaginationControls = (itemData) => {
         pageButton.className = i === currentPage ? "active" : "";
         pageButton.onclick = () => {
             currentPage = i;
-            DisplayData(itemData); // Update displayed items
+            DisplayData(itemData);
         };
         paginationContainer.appendChild(pageButton);
     }
 
-    // Create "Next" button
+
     if (currentPage < totalPages) {
         const nextButton = document.createElement("button");
         nextButton.innerText = "Next";

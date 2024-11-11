@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
+// this is the change
 
 app.use('/api/items', itemsRouter);
 
@@ -21,17 +21,6 @@ const port = 8000;
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 

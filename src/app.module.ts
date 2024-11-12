@@ -2,33 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'models/user.model';
-import { LoginUser, RegisterUser } from 'services/user.service';
-import { UserController } from 'controllers/user.controller';
-import { Course, courseSchema } from 'models/course.model';
-import { CourseService } from 'services/course.service';
-import { CourseController } from 'controllers/course.controller';
-import { Bcrypt, Token } from 'services/auth.service';
-import { UserSeedModule } from 'seeders/user/user.module';
-
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: 'User', schema: UserSchema },
-      { name: 'Course', schema: courseSchema },
-    ]),
-    MongooseModule.forRoot(`mongodb://127.0.0.1:27017/courses`),
-    UserSeedModule,
+    MongooseModule.forRoot(`mongodb://127.0.0.1:27017/dynamic`),
+    AuthModule,
   ],
-  controllers: [AppController, UserController, CourseController],
-  providers: [
-    AppService,
-    RegisterUser,
-    CourseService,
-    Token,
-    LoginUser,
-    Bcrypt,
-  ],
-  exports: [RegisterUser, Token],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

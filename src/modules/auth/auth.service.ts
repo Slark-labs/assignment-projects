@@ -45,6 +45,9 @@ export class AuthService {
         data: { newUser, token },
       };
     } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('User already exists');
+      }
       throw new ConflictException(error);
     }
   }

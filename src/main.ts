@@ -7,10 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Course CRUD')
-    .setDescription('The course API description')
+    .setTitle('Slark Backend API')
+    .setDescription('The Slark API description')
     .setVersion('1.0')
-    .addTag('courses')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

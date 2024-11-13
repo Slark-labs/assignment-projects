@@ -1,126 +1,139 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
-const uid = require("uuid");
-const items = require("./ITEMs_MOCK_DATA.json");
-const fs = require("fs");
+// Connection
+mongoose.connect("mongodb://127.0.0.1:27017/Grocery-list")
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.log(err));
 
-
-router.post('/', (req, res) => {
-    const { name, prize } = req.body;
-    const newItem = {
-        id:  uid.v4(),
-        name,
-        prize
+// Schema
+const itemsSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
     }
-    items.push(newItem);
-    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
-        if (err) {
-            console.log(err);
-        }
+});
 
-        return res.status(200).send({ message: "Item Inserted Successfully", item: newItem})
+const Item = mongoose.model('Item', itemsSchema);
+
+// POST: Create a new item
+router.post('/', async (req, res) => {
+    const { name, price } = req.body;
+
+    if (name === undefined || price === undefined) {
+        return res.status(400).send({ message: "Name and price are required" });
+    }
+
+    const newItem = new Item({
+        id: uuidv4(),
+        name,
+        price
     });
+
+    try {
+        const savedItem = await newItem.save();
+        res.status(200).send({ message: "Item Inserted Successfully", item: savedItem });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Failed to insert item" });
+    }
 });
 
 
-
+// GET: Retrieve all items with pagination
 router.get('/', async (req, res) => {
-
-
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 10;
-    const totalItems = items.length;
-    const totalPages = Math.ceil(totalItems / limit);
 
+    try {
+        const totalItems = await Item.countDocuments();
+        const totalPages = Math.ceil(totalItems / limit);
 
-    const skip = (page - 1) * limit ;
-
-    const paginatedItems = items.slice(skip, skip + limit);
-    if (paginatedItems <= totalPages) {
-        return res.status(404).json({ message : "Page Not Found" });
-
-
-    }
-
-    return res.json({
-        message: "All items retrieved",
-        totalItems,
-        totalPages,
-        items
-    });
-
-
-
-});
-
-
-
-router.get('/:id', (req, res) => {
-    const id = req.params.id;
-    const itemIndex = items.find(item => item.id === id);
-    if (!itemIndex && itemIndex !== 0) {
-        return res.status(404).send({message: "Not Found"});
-    }
-    return res.json({
-        message: " Item retrieved",
-        itemIndex
-    });
-
-})
-
-router.delete('/:id', (req, res) => {
-    const id = req.params.id;
-
-    const itemIndex = items.findIndex(item => item.id === id);
-
-
-    if (!itemIndex && itemIndex !== 0) {
-        return res.status(404).send({message: "Item Not Found"});
-
-    }
-
-    items.splice(itemIndex, 1);
-
-
-
-    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
-        if (err) {
-            console.log(err);
+        if (page > totalPages) {
+            return res.status(404).json({ message: "Page Not Found" });
         }
-        return res.status(200).send({message: "Item Delete Successfully"})
-    });
+
+        const paginatedItems = await Item.find()
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        res.json({
+            message: "All items retrieved",
+            totalItems,
+            totalPages,
+            items: paginatedItems
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Failed to retrieve items" });
+    }
 });
 
-router.put('/:id', (req, res) => {
-    const { name, prize } = req.body;
+// GET: Retrieve a specific item by ID
+router.get('/:id', async (req, res) => {
     const id = req.params.id;
 
-    // Find the index of the item in the array
-    const itemIndex = items.findIndex(item => item.id === id);
-
-    // Check if item exists
-    if (itemIndex === -1) {  // -1 means not found
-        return res.status(404).send({ message: "Item Not Found" });
-    }
-
-    // Update item properties if they exist
-    if (name) {
-        items[itemIndex].name = name;  // Update the name of the item
-    }
-    if (prize) {
-        items[itemIndex].prize = prize; // Update the prize of the item
-    }
-
-    // Write the updated items back to the JSON file
-    fs.writeFile("./items/ITEMs_MOCK_DATA.json", JSON.stringify(items), (err) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send({ message: "Failed to update item in the file" });
+    try {
+        const item = await Item.findOne({ id });
+        if (!item) {
+            return res.status(404).send({ message: "Not Found" });
         }
-        return res.status(200).send({ message: "Item Updated Successfully" });
-    });
+        res.json({
+            message: "Item retrieved",
+            item
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Failed to retrieve item" });
+    }
 });
 
+// DELETE: Delete a specific item by ID
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const deletedItem = await Item.findOneAndDelete({ id });
+        if (!deletedItem) {
+            return res.status(404).send({ message: "Item Not Found" });
+        }
+        res.status(200).send({ message: "Item Deleted Successfully" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Failed to delete item" });
+    }
+});
+
+// PUT: Update a specific item by ID
+router.put('/:id', async (req, res) => {
+    const { name, price } = req.body;
+    const id = req.params.id;
+
+    try {
+        const updatedItem = await Item.findOneAndUpdate(
+            { id },
+            { name, price },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedItem) {
+            return res.status(404).send({ message: "Item Not Found" });
+        }
+        res.status(200).send({ message: "Item Updated Successfully", item: updatedItem });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Failed to update item" });
+    }
+});
 
 module.exports = router;

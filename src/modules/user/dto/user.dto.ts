@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsEmail,
   IsObject,
+  ValidateIf,
 } from 'class-validator';
 export class CreateUserDto {
   @IsString()

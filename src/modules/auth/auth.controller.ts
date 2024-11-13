@@ -2,6 +2,7 @@ import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { validate } from 'class-validator';
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +15,7 @@ export class AuthController {
   ) {
     const user = await this.authService.createUser(createUserDto);
 
-    if ('message' in user) {
+    if (user && 'message' in user) {
       // Conflict response if user already exists
       return res
         .status(HttpStatus.CONFLICT)
@@ -25,7 +26,7 @@ export class AuthController {
     return res.status(HttpStatus.CREATED).json({
       message: 'User created successfully',
       success: true,
-      data: user.token,
+      data: user.data?.token,
     });
   }
 }

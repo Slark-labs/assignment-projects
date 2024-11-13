@@ -1,5 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class ValidationErrorResponse {
-    message: string;
-    errors: any[];
-  }
-  
+  @ApiProperty()
+  message: string;
+  @ApiProperty()
+  errors: any[];
+}

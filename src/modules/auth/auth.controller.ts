@@ -36,20 +36,28 @@ export class AuthController {
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
   ) {
-    const user = await this.authService.createUser(createUserDto);
+    try {
+      const user = await this.authService.createUser(createUserDto);
 
-    if (user.message === 'User already exist') {
-      // Conflict response if user already exists
-      return res
-        .status(HttpStatus.CONFLICT)
-        .json({ message: 'user already exist', success: false });
+      if (user.message === 'User already exist') {
+        // Conflict response if user already exists
+        return res.status(HttpStatus.CONFLICT).json({
+          message: 'user already exist',
+          success: false,
+        } as ConflictResponse);
+      }
+
+      // User created successfully
+      return res.status(HttpStatus.CREATED).json({
+        message: 'User created successfully',
+        success: true,
+        data: user.data?.token,
+      } as SuccessResponse);
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Validation failed.',
+        errors: [{ field: 'email', error: 'Email is already taken.' }],
+      } as ValidationErrorResponse);
     }
-
-    // User created successfully
-    return res.status(HttpStatus.CREATED).json({
-      message: 'User created successfully',
-      success: true,
-      data: user.data?.token,
-    });
   }
 }

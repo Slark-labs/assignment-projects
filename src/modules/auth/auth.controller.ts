@@ -25,7 +25,7 @@ export class AuthController {
     return res.status(HttpStatus.CREATED).json({
       message: 'User created successfully',
       success: true,
-      data: user,
+      data: user.token,
     });
   }
 }

@@ -3,9 +3,22 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
-    MongooseModule.forRoot(`mongodb://127.0.0.1:27017/dynamic`),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+
+    MongooseModule.forRoot(`mongodb://${process.env.DB_URL}`, {
+      connectionFactory: (connection) => {
+        connection.on('connected', () => {
+          console.log('✅ MongoDB connected successfully');
+        });
+        connection.on('error', (err) => {
+          console.error('❌ MongoDB connection error:', err);
+        });
+        return connection;
+      },
+    }),
     AuthModule,
   ],
   controllers: [AppController],

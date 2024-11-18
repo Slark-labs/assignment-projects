@@ -16,43 +16,69 @@ export class AuthService {
   // createUser logic
   async createUser(createUserDto: CreateUserDto) {
     try {
+      console.log('Creating user with DTO:', createUserDto);
+
+      // Check if a user with the same email or username already exists
       const existUser = await this.userModel.findOne({
         $or: [
           { email: createUserDto.email },
           { username: createUserDto.username },
         ],
       });
+
+      console.log('Existing user:', existUser);
+
+      // If a user exists, return an error message
       if (existUser) {
-        return { message: 'User already exist', success: false };
+        return { message: 'User already exists', success: false };
       }
+
+      // Validate if the password and confirm password match
       if (createUserDto.password !== createUserDto.confirmPassword) {
         return {
-          message: 'password and confirm password not maching',
+          message: 'Password and confirm password do not match',
           success: false,
         };
       }
+
+      // Hash the password before saving
       const hashedPassword = await hashPassword(createUserDto.password);
+
+      // Create a new user object
       const newUser = new this.userModel({
         ...createUserDto,
         password: hashedPassword,
       });
+
+      // Generate a JWT token
       const token = this.jwt.generateToken({
         username: newUser.username,
         email: newUser.email,
       });
+
+      console.log('Generated Token:', token);
+
+      // Save the new user to the database
       await newUser.save();
+
       return {
         message: 'User created successfully',
         success: true,
         data: { newUser, token },
       };
     } catch (error) {
+      console.error('Error creating user:', error);
+
+      // Handle MongoDB duplicate key error (e.g., if email or username already exists)
       if (error.code === 11000) {
         throw new ConflictException('User already exists');
       }
-      throw new ConflictException(error);
+
+      // Throw a more general error if something unexpected happens
+      throw new ConflictException('An error occurred while creating the user');
     }
   }
+
   // login user logic
   async login(loginUserDto: LoginDto) {
     try {

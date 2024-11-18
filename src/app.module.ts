@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
 
-    MongooseModule.forRoot(`mongodb://${process.env.DB_URL}`, {
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/dynamic', {
       connectionFactory: (connection) => {
         connection.on('connected', () => {
           console.log('✅ MongoDB connected successfully');

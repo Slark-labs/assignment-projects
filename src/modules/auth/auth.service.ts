@@ -5,6 +5,7 @@ import { User } from '../user/schema/user.schema';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { JwtService } from './token/jwt.service';
 import { hashPassword, comparePassword } from './auth.utils';
+import { LoginDto } from './dto/loginUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private readonly jwt: JwtService,
   ) {}
+  // createUser logic
   async createUser(createUserDto: CreateUserDto) {
     try {
       const existUser = await this.userModel.findOne({
@@ -35,8 +37,8 @@ export class AuthService {
         password: hashedPassword,
       });
       const token = this.jwt.generateToken({
-        username: createUserDto.username,
-        email: createUserDto.email,
+        username: newUser.username,
+        email: newUser.email,
       });
       await newUser.save();
       return {
@@ -49,6 +51,58 @@ export class AuthService {
         throw new ConflictException('User already exists');
       }
       throw new ConflictException(error);
+    }
+  }
+  // login user logic
+  async login(loginUserDto: LoginDto) {
+    try {
+      const { username, email, phone, password } = loginUserDto;
+
+      // Ensure at least one identifier (username, email, or phone) is provided
+      if (!username && !email && !phone) {
+        return {
+          message: 'Provide either username, email, or phone.',
+          success: false,
+        };
+      }
+
+      // Check if the user exists using one of the provided identifiers
+      const existUser = await this.userModel.findOne({
+        $or: [
+          { username: username || undefined },
+          { email: email || undefined },
+          { phone: phone || undefined },
+        ],
+      });
+
+      if (!existUser) {
+        return { message: 'User not found', success: false };
+      }
+
+      // Validate password
+      const isValidPassword = await comparePassword(
+        password,
+        existUser.password,
+      );
+      if (!isValidPassword) {
+        return { message: 'Invalid credentials', success: false };
+      }
+
+      // Generate JWT token
+      const token = this.jwt.generateToken({
+        username: existUser.username,
+        email: existUser.email,
+      });
+
+      return {
+        message: 'Login successful',
+        success: true,
+        data: { token },
+      };
+    } catch (error) {
+      throw new ConflictException(
+        error.message || 'An unexpected error occurred',
+      );
     }
   }
 }

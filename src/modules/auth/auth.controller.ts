@@ -34,7 +34,7 @@ export class AuthController {
         });
       }
 
-      console.log('User Data: ', user);
+     
 
       // User created successfully
       return res.status(HttpStatus.CREATED).json({

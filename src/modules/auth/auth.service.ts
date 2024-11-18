@@ -16,8 +16,6 @@ export class AuthService {
   // createUser logic
   async createUser(createUserDto: CreateUserDto) {
     try {
-      console.log('Creating user with DTO:', createUserDto);
-
       // Check if a user with the same email or username already exists
       const existUser = await this.userModel.findOne({
         $or: [
@@ -25,8 +23,6 @@ export class AuthService {
           { username: createUserDto.username },
         ],
       });
-
-      console.log('Existing user:', existUser);
 
       // If a user exists, return an error message
       if (existUser) {
@@ -55,8 +51,6 @@ export class AuthService {
         username: newUser.username,
         email: newUser.email,
       });
-
-      console.log('Generated Token:', token);
 
       // Save the new user to the database
       await newUser.save();

@@ -26,6 +26,11 @@ export const SwaggerResponses = {
     description: 'Conflict error',
     schema: { example },
   }),
+  successUsername: (example: any): ApiResponseOptions => ({
+    status: 200,
+    description: 'username-found',
+    schema: { example },
+  }),
 };
 
 // Examples for responses
@@ -56,6 +61,11 @@ export const ExampleResponses = {
   conflict: {
     message: 'User already exists',
     success: false,
+  },
+  successUsername: {
+    message: 'username verify successfully',
+    success: true,
+    exist: true,
   },
 };
 // Example extension in swagger.responses.ts

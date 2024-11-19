@@ -1,8 +1,16 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/loginUser.dto';
 import {
   ExampleResponses,
@@ -34,8 +42,6 @@ export class AuthController {
         });
       }
 
-     
-
       // User created successfully
       return res.status(HttpStatus.CREATED).json({
         message: 'User created successfully',
@@ -50,8 +56,7 @@ export class AuthController {
       });
     }
   }
-
-  @ApiBody({ type: LoginDto }) // Document the request body using the DTO
+  // Document the request body using the DTO
   @Post('login')
   @ApiBody({ type: LoginDto })
   @ApiResponse(SwaggerResponses.success(ExampleResponses.success))
@@ -88,5 +93,41 @@ export class AuthController {
         errors: [{ field: 'general', error: error.message }],
       });
     }
+  }
+  @Get('verify-username')
+  @ApiResponse(
+    SwaggerResponses.successUsername(ExampleResponses.successUsername),
+  )
+  @ApiResponse(SwaggerResponses.notFound(ExampleResponses.notFound))
+  @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
+  @ApiQuery({
+    name: 'username',
+    required: true,
+    type: String,
+    description: 'The username of the user',
+    example: 'john_doe',
+  })
+  async verifyUserName(
+    @Query('username') username: string,
+    @Res() res: Response,
+  ) {
+    if (!username) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid username',
+        success: false,
+      });
+    }
+    const existUser = await this.authService.verifyUserName(username);
+    if (!existUser) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        message: 'User not found',
+        success: false,
+      });
+    }
+    return res.status(HttpStatus.FOUND).json({
+      message: 'User found successfully',
+      success: true,
+      exist: true,
+    });
   }
 }

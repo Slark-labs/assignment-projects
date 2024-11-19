@@ -125,4 +125,10 @@ export class AuthService {
       );
     }
   }
+
+  // verify username
+  async verifyUserName(username: string) {
+    const existUser = await this.userModel.findOne({ username: username });
+    return !!existUser;
+  }
 }

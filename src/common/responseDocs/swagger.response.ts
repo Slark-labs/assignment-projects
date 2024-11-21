@@ -1,71 +1,147 @@
 import { ApiResponseOptions } from '@nestjs/swagger';
 
 export const SwaggerResponses = {
-  success: (example: any): ApiResponseOptions => ({
-    status: 200,
-    description: 'Request successful',
-    schema: { example },
+  created: (
+    example: any,
+    description = 'Request successful',
+  ): ApiResponseOptions => ({
+    status: 201,
+    description,
+    schema: {
+      example,
+    },
   }),
-  notFound: (example: any): ApiResponseOptions => ({
+  OK: (
+    example: any,
+    description = 'Request successful',
+  ): ApiResponseOptions => ({
+    status: 200,
+    description,
+    schema: {
+      example,
+    },
+  }),
+  forbidden: (
+    example: any,
+    description = 'User is blocked',
+  ): ApiResponseOptions => ({
+    status: 403,
+    description,
+    schema: {
+      example,
+    },
+  }),
+  notFound: (
+    example: any,
+    description = 'User not found',
+  ): ApiResponseOptions => ({
     status: 404,
-    description: 'Resource not found',
-    schema: { example },
+    description,
+    schema: {
+      example,
+    },
   }),
-  unauthorized: (example: any): ApiResponseOptions => ({
+  unauthorized: (
+    example: any,
+    description = 'Unauthorized request',
+  ): ApiResponseOptions => ({
     status: 401,
-    description: 'Unauthorized request',
-    schema: { example },
+    description,
+    schema: {
+      example,
+    },
   }),
-  badRequest: (example: any): ApiResponseOptions => ({
+  badRequest: (
+    example: any,
+    description = 'Bad request',
+  ): ApiResponseOptions => ({
     status: 400,
-    description: 'Validation error',
-    schema: { example },
+    description,
+    schema: {
+      example,
+    },
   }),
-  conflict: (example: any): ApiResponseOptions => ({
+  conflict: (
+    example: any,
+    description = 'Conflict error',
+  ): ApiResponseOptions => ({
     status: 409,
-    description: 'Conflict error',
-    schema: { example },
+    description,
+    schema: {
+      example,
+    },
   }),
-  successUsername: (example: any): ApiResponseOptions => ({
+  successUsername: (
+    example: any,
+    description = 'Username found',
+  ): ApiResponseOptions => ({
     status: 200,
-    description: 'username-found',
-    schema: { example },
+    description,
+    schema: {
+      example,
+    },
+  }),
+  internalServerError: (
+    example: any,
+    description = 'Internal server error',
+  ): ApiResponseOptions => ({
+    status: 500,
+    description,
+    schema: {
+      example,
+    },
   }),
 };
 
 // Examples for responses
 export const ExampleResponses = {
-  success: {
-    message: 'Login successful',
+  created: {
+    message: 'String',
     success: true,
     data: { token: 'your-jwt-token' },
   },
+  OK: {
+    message: 'String',
+    success: true,
+    data: { token: 'your-jwt-token' },
+  },
+  forbidden: {
+    message: 'String',
+    success: false,
+  },
+
   notFound: {
-    message: 'User not found',
+    message: 'String',
     success: false,
   },
   unauthorized: {
-    message: 'Invalid credentials',
+    message: 'String',
     success: false,
   },
   badRequest: {
-    message: 'Validation failed.',
+    message: 'String',
     success: false,
-    errors: [{ field: 'general', error: 'Some error message' }],
+    responseObject: {},
   },
   registerSuccess: {
-    message: 'User created successfully',
+    message: 'String',
     success: true,
     data: { token: 'your-jwt-token' },
   },
   conflict: {
-    message: 'User already exists',
+    message: 'String',
     success: false,
   },
   successUsername: {
-    message: 'username verify successfully',
+    message: 'String',
     success: true,
     exist: true,
   },
+  internalServerError: {
+    message: 'String',
+    success: false,
+    error: {},
+  },
 };
+
 // Example extension in swagger.responses.ts

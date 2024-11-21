@@ -1,11 +1,22 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../user/schema/user.schema';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { JwtService } from './token/jwt.service';
-import { hashPassword, comparePassword } from './auth.utils';
+import {
+  hashPassword,
+  comparePassword,
+  generateOtp,
+  hashedOtp,
+} from './auth.utils';
 import { LoginDto } from './dto/loginUser.dto';
+import { forgetPasswordDto } from './dto/forgetPassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +32,7 @@ export class AuthService {
         $or: [
           { email: createUserDto.email },
           { username: createUserDto.username },
+          { phone: createUserDto.phone },
         ],
       });
 
@@ -39,11 +51,16 @@ export class AuthService {
 
       // Hash the password before saving
       const hashedPassword = await hashPassword(createUserDto.password);
+      const otp = generateOtp();
+      console.log(otp);
+      const hashOtp = await hashedOtp(otp);
+      console.log(hashOtp);
 
       // Create a new user object
       const newUser = new this.userModel({
         ...createUserDto,
         password: hashedPassword,
+        emailVerificationOtp: hashOtp,
       });
 
       // Generate a JWT token
@@ -130,5 +147,78 @@ export class AuthService {
   async verifyUserName(username: string) {
     const existUser = await this.userModel.findOne({ username: username });
     return !!existUser;
+  }
+  async reqForgetPasswordOtp(existUser: forgetPasswordDto) {
+    try {
+      const { username, email, phone } = existUser;
+
+      if (!username && !email && !phone) {
+        throw new HttpException(
+          {
+            message: 'Provide either username, email, or phone',
+            success: false,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const user = await this.userModel.findOne({
+        $or: [
+          { username: username || undefined },
+          { email: email || undefined },
+          { phone: phone || undefined },
+        ],
+      });
+
+      if (!user || user.status === 'deleted') {
+        throw new HttpException(
+          { message: 'User not found', success: false },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (user.status === 'blocked') {
+        throw new HttpException(
+          { message: 'User is blocked', success: false },
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      const otp = generateOtp();
+      const hashOtp = await hashedOtp(otp);
+      user.forgotPasswordOTP = hashOtp;
+      return !!user.save();
+    } catch (error) {
+      throw new error();
+    }
+  }
+  async verifyForgetPasswordOtp(existUser: forgetPasswordDto) {
+    const { username, email, phone } = existUser;
+
+    if (!username && !email && !phone) {
+      throw new HttpException(
+        {
+          message: 'Provide either username, email, or phone',
+          success: false,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const user = await this.userModel.findOne({
+      $or: [
+        { username: username || undefined },
+        { email: email || undefined },
+        { phone: phone || undefined },
+      ],
+    });
+
+    if (!user || user.status === 'deleted') {
+      throw new HttpException(
+        { message: 'User not found', success: false },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    
   }
 }

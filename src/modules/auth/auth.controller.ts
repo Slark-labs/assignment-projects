@@ -4,12 +4,13 @@ import {
   Get,
   HttpStatus,
   Post,
+  Put,
   Query,
   Res,
 } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { query, Response } from 'express';
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/loginUser.dto';
 import {
@@ -24,7 +25,7 @@ export class AuthController {
 
   @Post('register')
   @ApiBody({ type: CreateUserDto }) // Describe the request body for registration
-  @ApiResponse(SwaggerResponses.success(ExampleResponses.registerSuccess))
+  @ApiResponse(SwaggerResponses.created(ExampleResponses.created))
   @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
   @ApiResponse(SwaggerResponses.conflict(ExampleResponses.conflict))
   async registerUser(
@@ -59,7 +60,7 @@ export class AuthController {
   // Document the request body using the DTO
   @Post('login')
   @ApiBody({ type: LoginDto })
-  @ApiResponse(SwaggerResponses.success(ExampleResponses.success))
+  @ApiResponse(SwaggerResponses.OK(ExampleResponses.OK))
   @ApiResponse(SwaggerResponses.notFound(ExampleResponses.notFound))
   @ApiResponse(SwaggerResponses.unauthorized(ExampleResponses.unauthorized))
   @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
@@ -129,5 +130,58 @@ export class AuthController {
       success: true,
       exist: true,
     });
+  }
+  @Put('request-forget-password-otp')
+  @ApiResponse(SwaggerResponses.notFound(ExampleResponses.notFound))
+  @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
+  @ApiResponse(SwaggerResponses.forbidden(ExampleResponses.forbidden))
+  @ApiResponse(
+    SwaggerResponses.internalServerError(ExampleResponses.internalServerError),
+  )
+  @ApiQuery({
+    name: 'username',
+    type: String,
+    required: false,
+    description: 'The username of the user',
+    example: 'john_doe',
+  })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    type: String,
+    description: 'The email of the user',
+    example: 'john_doe@gmail.com',
+  })
+  @ApiQuery({
+    name: 'phone',
+    required: false,
+    type: String,
+    description: 'The phone of the user',
+    example: '92999292111',
+  })
+  async reqForgetPasswordOtp(
+    @Query('username') username: string,
+    @Query('email') email: string,
+    @Query('phone') phone: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const user = await this.authService.reqForgetPasswordOtp({
+        username,
+        phone,
+        email,
+      });
+      if (user) {
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: 'otp sent successfully', success: true });
+      }
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message,
+        success: false,
+        error: { error },
+      });
+    }
   }
 }

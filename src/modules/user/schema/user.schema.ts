@@ -18,11 +18,55 @@ export const UserSchema = new Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
-  confirmPassword: { type: String, required: true },
-  role: { type: String, enum: ['visitor', 'user', 'admin'], default: 'visitor' },
+  // confirmPassword: { type: String, required: true },
+  role: {
+    type: String,
+    enum: ['visitor', 'user', 'admin'],
+    default: 'visitor',
+  },
+  emailVerificationOtp: { type: String, default: null },
   phone: { type: String },
+  status: {
+    type: String,
+    enum: ['active', 'blocked', 'deleted'],
+    required: true,
+    default: 'active',
+  },
+  emailVerified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  passwordUpdateRequested: {
+    type: Boolean,
+    default: true,
+  },
+
+  phoneVerified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  profilePciture: {
+    type: String,
+    require: false,
+  },
+  phoneVerificationOTP: {
+    type: String,
+    nullable: true,
+    default: null,
+  },
+  forgotPasswordOTP: {
+    type: String,
+    default: null,
+  },
+  accessToken: {
+    type: String,
+    default: null,
+  },
   currentAddress: { type: AddressSchema, required: true },
   postalAddress: { type: AddressSchema, required: true },
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -35,8 +79,9 @@ export interface User extends Document {
   lastName: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  // confirmPassword: string;
   role: 'visitor' | 'user' | 'admin';
+  emailVerificationOtp: string | null;
   phone: string;
   currentAddress: {
     street: string;
@@ -45,6 +90,15 @@ export interface User extends Document {
     zip: string;
     country: string;
   };
+  status: 'active' | 'blocked' | 'deleted';
+  emailVerfied: boolean;
+  passwordUpdateRequested: boolean;
+  phoneVerified: boolean;
+  profilePicture: string;
+  emailVerificationOTP: string;
+  phoneVerificationOTP: string;
+  forgotPasswordOTP: string;
+  accessToken: string;
   postalAddress: {
     street: string;
     city: string;

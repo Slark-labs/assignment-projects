@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEmail } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsNotEmpty } from 'class-validator';
 
 export class forgetPasswordDto {
   @IsOptional()
@@ -12,4 +12,10 @@ export class forgetPasswordDto {
   @IsOptional()
   @IsString()
   phone?: string;
+}
+
+export class verifyForgetPasswordDto extends forgetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
 }

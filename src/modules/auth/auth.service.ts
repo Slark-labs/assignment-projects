@@ -14,9 +14,13 @@ import {
   comparePassword,
   generateOtp,
   hashedOtp,
+  verifyOtp,
 } from './auth.utils';
 import { LoginDto } from './dto/loginUser.dto';
-import { forgetPasswordDto } from './dto/forgetPassword.dto';
+import {
+  forgetPasswordDto,
+  verifyForgetPasswordDto,
+} from './dto/forgetPassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,16 +41,22 @@ export class AuthService {
       });
 
       // If a user exists, return an error message
-      if (existUser) {
-        return { message: 'User already exists', success: false };
+      if (existUser && existUser.status === 'deleted') {
+        throw new HttpException(
+          { message: 'User already exists', success: false },
+          HttpStatus.CONFLICT,
+        );
       }
 
       // Validate if the password and confirm password match
       if (createUserDto.password !== createUserDto.confirmPassword) {
-        return {
-          message: 'Password and confirm password do not match',
-          success: false,
-        };
+        throw new HttpException(
+          {
+            message: 'Password and confirm password do not match',
+            success: false,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       // Hash the password before saving
@@ -97,10 +107,13 @@ export class AuthService {
 
       // Ensure at least one identifier (username, email, or phone) is provided
       if (!username && !email && !phone) {
-        return {
-          message: 'Provide either username, email, or phone.',
-          success: false,
-        };
+        throw new HttpException(
+          {
+            message: 'Provide either username, email, or phone.',
+            success: false,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       // Check if the user exists using one of the provided identifiers
@@ -113,7 +126,22 @@ export class AuthService {
       });
 
       if (!existUser) {
-        return { message: 'User not found', success: false };
+        throw new HttpException(
+          { message: 'User not found', success: false },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (existUser.status === 'deleted') {
+        throw new HttpException(
+          { message: 'User not found', success: false },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (existUser.status === 'blocked') {
+        throw new HttpException(
+          { message: 'User is blocked', success: false },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       // Validate password
@@ -122,7 +150,10 @@ export class AuthService {
         existUser.password,
       );
       if (!isValidPassword) {
-        return { message: 'Invalid credentials', success: false };
+        throw new HttpException(
+          { message: 'Invalid credentials', success: false },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       // Generate JWT token
@@ -137,8 +168,12 @@ export class AuthService {
         data: { token },
       };
     } catch (error) {
-      throw new ConflictException(
-        error.message || 'An unexpected error occurred',
+      throw new HttpException(
+        {
+          message: error.response?.message || 'An unexpected error occurred',
+          success: false,
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -184,6 +219,7 @@ export class AuthService {
         );
       }
       const otp = generateOtp();
+      console.log(otp);
       const hashOtp = await hashedOtp(otp);
       user.forgotPasswordOTP = hashOtp;
       return !!user.save();
@@ -191,7 +227,7 @@ export class AuthService {
       throw new error();
     }
   }
-  async verifyForgetPasswordOtp(existUser: forgetPasswordDto) {
+  async verifyForgetPasswordOtp(existUser: verifyForgetPasswordDto) {
     const { username, email, phone } = existUser;
 
     if (!username && !email && !phone) {
@@ -219,6 +255,20 @@ export class AuthService {
       );
     }
 
-    
+    const isValidOtp = await verifyOtp(existUser.otp, user.forgotPasswordOTP);
+    console.log(existUser.otp);
+    if (!isValidOtp) {
+      throw new HttpException(
+        { message: 'Otp doesnot match', success: false },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const token = this.jwt.generateToken({
+      username: user.username,
+      email: user.email,
+    });
+    user.forgotPasswordOTP = '';
+    await user.save();
+    return { user, token };
   }
 }

@@ -71,7 +71,7 @@ export const SwaggerResponses = {
       example,
     },
   }),
-  successUsername: (
+  found: (
     example: any,
     description = 'Username found',
   ): ApiResponseOptions => ({
@@ -132,7 +132,7 @@ export const ExampleResponses = {
     message: 'String',
     success: false,
   },
-  successUsername: {
+  found: {
     message: 'String',
     success: true,
     exist: true,

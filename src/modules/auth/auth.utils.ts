@@ -25,3 +25,7 @@ export const hashedOtp = async (otp: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(otp, salt);
 };
+export const verifyOtp = async (
+  otp: string,
+  hashedOtp: string,
+): Promise<boolean> => bcrypt.compare(otp, hashedOtp);

@@ -25,23 +25,33 @@ export class AuthController {
 
   @Post('register')
   @ApiBody({ type: CreateUserDto }) // Describe the request body for registration
-  @ApiResponse(SwaggerResponses.created(ExampleResponses.created))
-  @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
-  @ApiResponse(SwaggerResponses.conflict(ExampleResponses.conflict))
+  @ApiResponse(
+    SwaggerResponses.created(
+      ExampleResponses.created,
+      'User registration successful',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.internalServerError(
+      ExampleResponses.internalServerError,
+      'Internal server error',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.badRequest(ExampleResponses.badRequest, 'Invalid Input'),
+  )
+  @ApiResponse(
+    SwaggerResponses.conflict(
+      ExampleResponses.conflict,
+      'Conflict:User already exist',
+    ),
+  )
   async registerUser(
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
   ) {
     try {
       const user = await this.authService.createUser(createUserDto);
-
-      if (user.message === 'User already exist') {
-        // Conflict response if user already exists
-        return res.status(HttpStatus.CONFLICT).json({
-          message: 'user already exist',
-          success: false,
-        });
-      }
 
       // User created successfully
       return res.status(HttpStatus.CREATED).json({
@@ -50,10 +60,10 @@ export class AuthController {
         data: user.data?.token,
       });
     } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: 'Validation failed.',
-        errors: [{ field: 'email', error: 'Email is already taken.' }],
+        error: [{ field: 'email', error: error.message }],
       });
     }
   }
@@ -61,46 +71,50 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginDto })
   @ApiResponse(SwaggerResponses.OK(ExampleResponses.OK))
-  @ApiResponse(SwaggerResponses.notFound(ExampleResponses.notFound))
-  @ApiResponse(SwaggerResponses.unauthorized(ExampleResponses.unauthorized))
-  @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
+  @ApiResponse(
+    SwaggerResponses.internalServerError(ExampleResponses.internalServerError),
+  )
+  @ApiResponse(
+    SwaggerResponses.notFound(ExampleResponses.notFound, 'Invalid Credentials'),
+  )
+  @ApiResponse(
+    SwaggerResponses.badRequest(
+      ExampleResponses.badRequest,
+      'Invalid Credentials',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.forbidden(ExampleResponses.forbidden, 'user is blocked'),
+  )
   async loginUser(@Body() loginUserDto: LoginDto, @Res() res: Response) {
     try {
       const user = await this.authService.login(loginUserDto);
-
-      if (user.message === 'User not found') {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'User not found',
-          success: false,
-        });
-      }
-
-      if (user.message === 'Invalid credentials') {
-        return res.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'Invalid credentials',
-          success: false,
-        });
-      }
-
       return res.status(HttpStatus.OK).json({
         message: 'Login successful',
         success: true,
         data: user.data?.token,
       });
     } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'Validation failed.',
         success: false,
-        errors: [{ field: 'general', error: error.message }],
+        error: [{ field: 'general', error: error.message }],
       });
     }
   }
   @Get('verify-username')
   @ApiResponse(
-    SwaggerResponses.successUsername(ExampleResponses.successUsername),
+    SwaggerResponses.found(ExampleResponses.OK, 'User found successfully'),
   )
-  @ApiResponse(SwaggerResponses.notFound(ExampleResponses.notFound))
-  @ApiResponse(SwaggerResponses.badRequest(ExampleResponses.badRequest))
+  @ApiResponse(
+    SwaggerResponses.notFound(ExampleResponses.notFound, 'User not found'),
+  )
+  @ApiResponse(
+    SwaggerResponses.badRequest(
+      ExampleResponses.badRequest,
+      'Invalid username',
+    ),
+  )
   @ApiQuery({
     name: 'username',
     required: true,
@@ -125,7 +139,7 @@ export class AuthController {
         success: false,
       });
     }
-    return res.status(HttpStatus.FOUND).json({
+    return res.status(HttpStatus.OK).json({
       message: 'User found successfully',
       success: true,
       exist: true,
@@ -182,6 +196,73 @@ export class AuthController {
         success: false,
         error: { error },
       });
+    }
+  }
+  @Get('verify-forget-password-otp')
+  @ApiResponse(
+    SwaggerResponses.OK(ExampleResponses.OK, 'Otp verified successfully'),
+  )
+  @ApiResponse(
+    SwaggerResponses.notFound(ExampleResponses.notFound, 'Not found'),
+  )
+  @ApiResponse(
+    SwaggerResponses.badRequest(ExampleResponses.badRequest, 'Invalid input'),
+  )
+  @ApiResponse(
+    SwaggerResponses.internalServerError(
+      ExampleResponses.internalServerError,
+      'Internal server error',
+    ),
+  )
+  @ApiQuery({
+    name: 'username',
+    type: String,
+    required: false,
+    description: 'The username of the user',
+    example: 'john_doe',
+  })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    type: String,
+    description: 'The email of the user',
+    example: 'john_doe@gmail.com',
+  })
+  @ApiQuery({
+    name: 'phone',
+    required: false,
+    type: String,
+    description: 'The phone of the user',
+    example: '92999292111',
+  })
+  async verifyForgetPasswordOtp(
+    @Query('otp') otp: string,
+    @Query('username') username: string,
+    @Query('email') email: string,
+    @Query('phone') phone: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const user = await this.authService.verifyForgetPasswordOtp({
+        otp,
+        username,
+        phone,
+        email,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: 'otp verify successfully',
+        success: true,
+        data: user.token,
+      });
+    } catch (error) {
+      if (error) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: error.message,
+          success: false,
+          error: { error },
+        });
+      }
     }
   }
 }

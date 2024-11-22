@@ -16,7 +16,7 @@ import { LoginDto } from './dto/loginUser.dto';
 import {
   ExampleResponses,
   SwaggerResponses,
-} from 'src/common/responseDocs/swagger.response';
+} from 'src/common/swaggerDocs/swagger.response';
 
 @ApiTags('Auth')
 @Controller('auth')

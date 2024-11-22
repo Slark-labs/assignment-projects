@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../user/schema/user.schema';
 import { CreateUserDto } from '../user/dto/user.dto';
-import { JwtService } from './token/jwt.service';
+import { JwtService } from '../../common/token/jwt.service';
 import {
   hashPassword,
   comparePassword,
@@ -62,9 +62,7 @@ export class AuthService {
       // Hash the password before saving
       const hashedPassword = await hashPassword(createUserDto.password);
       const otp = generateOtp();
-      console.log(otp);
       const hashOtp = await hashedOtp(otp);
-      console.log(hashOtp);
 
       // Create a new user object
       const newUser = new this.userModel({
@@ -219,7 +217,7 @@ export class AuthService {
         );
       }
       const otp = generateOtp();
-      console.log(otp);
+
       const hashOtp = await hashedOtp(otp);
       user.forgotPasswordOTP = hashOtp;
       return !!user.save();
@@ -256,7 +254,7 @@ export class AuthService {
     }
 
     const isValidOtp = await verifyOtp(existUser.otp, user.forgotPasswordOTP);
-    console.log(existUser.otp);
+
     if (!isValidOtp) {
       throw new HttpException(
         { message: 'Otp doesnot match', success: false },

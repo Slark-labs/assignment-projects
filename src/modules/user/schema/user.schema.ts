@@ -21,8 +21,8 @@ export const UserSchema = new Schema({
   // confirmPassword: { type: String, required: true },
   role: {
     type: String,
-    enum: ['visitor', 'user', 'admin'],
-    default: 'visitor',
+    // enum: ['visitor', 'user', 'admin'],
+    // default: 'visitor',
   },
   emailVerificationOtp: { type: String, default: null },
   phone: { type: String },
@@ -91,7 +91,7 @@ export interface User extends Document {
     country: string;
   };
   status: 'active' | 'blocked' | 'deleted';
-  emailVerfied: boolean;
+  emailVerified: boolean;
   passwordUpdateRequested: boolean;
   phoneVerified: boolean;
   profilePicture: string;

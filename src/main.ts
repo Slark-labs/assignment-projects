@@ -8,9 +8,17 @@ async function bootstrap() {
   console.log('🌟 NestJS application is running!');
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Slark Backend API')
-    .setDescription('The Slark API description')
+    .setTitle('Dynamic Backend API')
+    .setDescription('The dynamic API description')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT', // Optional, describes the format of the token
+      },
+      'access-token', // This is the name of the security scheme
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

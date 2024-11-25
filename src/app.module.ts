@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from './common/token/jwt.module';
+import { UserModule } from './modules/user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
@@ -24,6 +25,7 @@ import { JwtModule } from './common/token/jwt.module';
     }),
     AuthModule,
     JwtModule,
+    UserModule,
   ],
   exports: [JwtModule],
   controllers: [AppController],

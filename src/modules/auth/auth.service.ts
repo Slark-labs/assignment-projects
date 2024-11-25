@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../user/schema/user.schema';
 import { CreateUserDto } from '../user/dto/user.dto';
-import { JwtService } from '../../common/token/jwt.service';
+import { IUser, JwtService } from '../../common/token/jwt.service';
 import {
   hashPassword,
   comparePassword,
@@ -28,10 +28,24 @@ export class AuthService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private readonly jwt: JwtService,
   ) {}
+  private constructTokenPayload(user: User): IUser {
+    return {
+      id: user.id.toString(),
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      phone: user.phone,
+      emailVerified: user.emailVerified || false,
+      phoneVerified: user.phoneVerified || false,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
   // createUser logic
+
   async createUser(createUserDto: CreateUserDto) {
     try {
-      // Check if a user with the same email or username already exists
+      // Check for existing user
       const existUser = await this.userModel.findOne({
         $or: [
           { email: createUserDto.email },
@@ -40,45 +54,40 @@ export class AuthService {
         ],
       });
 
-      // If a user exists, return an error message
-      if (existUser && existUser.status === 'deleted') {
+      if (existUser) {
         throw new HttpException(
           { message: 'User already exists', success: false },
           HttpStatus.CONFLICT,
         );
       }
 
-      // Validate if the password and confirm password match
+      // Validate password match
       if (createUserDto.password !== createUserDto.confirmPassword) {
         throw new HttpException(
-          {
-            message: 'Password and confirm password do not match',
-            success: false,
-          },
+          { message: 'Passwords do not match', success: false },
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      // Hash the password before saving
+      // Hash password and OTP
       const hashedPassword = await hashPassword(createUserDto.password);
       const otp = generateOtp();
       const hashOtp = await hashedOtp(otp);
 
-      // Create a new user object
+      // Create new user object
       const newUser = new this.userModel({
         ...createUserDto,
         password: hashedPassword,
         emailVerificationOtp: hashOtp,
       });
 
-      // Generate a JWT token
-      const token = this.jwt.generateToken({
-        username: newUser.username,
-        email: newUser.email,
-      });
-
-      // Save the new user to the database
       await newUser.save();
+
+      // Construct JWT payload
+      const tokenPayload = this.constructTokenPayload(newUser);
+
+      // Generate JWT token
+      const token = this.jwt.generateToken(tokenPayload);
 
       return {
         message: 'User created successfully',
@@ -88,12 +97,10 @@ export class AuthService {
     } catch (error) {
       console.error('Error creating user:', error);
 
-      // Handle MongoDB duplicate key error (e.g., if email or username already exists)
       if (error.code === 11000) {
         throw new ConflictException('User already exists');
       }
 
-      // Throw a more general error if something unexpected happens
       throw new ConflictException('An error occurred while creating the user');
     }
   }
@@ -155,10 +162,8 @@ export class AuthService {
       }
 
       // Generate JWT token
-      const token = this.jwt.generateToken({
-        username: existUser.username,
-        email: existUser.email,
-      });
+      const payload = this.constructTokenPayload(existUser);
+      const token = this.jwt.generateToken(payload);
 
       return {
         message: 'Login successful',
@@ -261,10 +266,8 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const token = this.jwt.generateToken({
-      username: user.username,
-      email: user.email,
-    });
+    const payload = this.constructTokenPayload(user);
+    const token = this.jwt.generateToken(payload);
     user.forgotPasswordOTP = '';
     await user.save();
     return { user, token };

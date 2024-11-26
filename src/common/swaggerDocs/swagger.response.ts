@@ -98,12 +98,10 @@ export const ExampleResponses = {
   created: {
     message: 'String',
     success: true,
-    data: { token: 'your-jwt-token' },
   },
   OK: {
     message: 'String',
     success: true,
-    data: { token: 'your-jwt-token' },
   },
   forbidden: {
     message: 'String',

@@ -27,7 +27,11 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto }) // Describe the request body for registration
   @ApiResponse(
     SwaggerResponses.created(
-      ExampleResponses.created,
+      {
+        message: 'User created successfully',
+        success: true,
+        token: 'string',
+      },
       'User registration successful',
     ),
   )
@@ -70,7 +74,16 @@ export class AuthController {
   // Document the request body using the DTO
   @Post('login')
   @ApiBody({ type: LoginDto })
-  @ApiResponse(SwaggerResponses.OK(ExampleResponses.OK))
+  @ApiResponse(
+    SwaggerResponses.OK(
+      {
+        message: 'User Logged in successfully',
+        success: true,
+        token: 'string',
+      },
+      'user login successfully',
+    ),
+  )
   @ApiResponse(
     SwaggerResponses.internalServerError(ExampleResponses.internalServerError),
   )

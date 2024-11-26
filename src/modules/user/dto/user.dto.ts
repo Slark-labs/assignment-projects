@@ -7,6 +7,7 @@ import {
   ValidateIf,
   MinLength,
   MaxLength,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -121,4 +122,25 @@ export class CreateUserDto {
     zip: string;
     country: string;
   };
+}
+
+export class DeleteUserDto {
+  @ApiProperty({
+    description: 'Unique username of the user',
+    example: 'john_doe',
+  })
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  username?: string;
+
+  @ApiProperty({
+    description: 'Email address of the user',
+    example: 'john.doe@example.com',
+  })
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsEmail()
+  email?: string;
 }

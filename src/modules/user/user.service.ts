@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './schema/user.schema';
+import { User, UserSchema } from './schema/user.schema';
+import { DeleteUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -25,5 +26,26 @@ export class UserService {
     return user;
   }
   //DELETE ME SERVICE
-  async deleteMe(){}
+  async deleteMe(id: string, dto: DeleteUserDto) {
+    const user = await this.userModel
+      .findByIdAndUpdate(id, { status: 'deleted' }, { new: true })
+      .select('-password -__v');
+    if (!user) {
+      throw new HttpException(
+        { message: 'Not authorized', success: false },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    if (
+      user?.email !== dto.email &&
+      user?.username !== dto.username &&
+      user?.id !== id
+    ) {
+      throw new HttpException(
+        { message: 'Not authorized', success: false },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return user;
+  }
 }

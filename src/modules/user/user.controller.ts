@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -18,7 +19,7 @@ import {
   SwaggerResponses,
 } from 'src/common/swaggerDocs/swagger.response';
 import { log } from 'console';
-import { DeleteUserDto } from './dto/user.dto';
+import { DeleteUserDto, UpdateUserDto } from './dto/user.dto';
 @UseGuards(new AuthGuard())
 @ApiBearerAuth('access-token')
 @Controller('user')
@@ -98,6 +99,52 @@ export class UserController {
       if (user) {
         return res.status(HttpStatus.OK).json({
           message: 'successfully deleted ',
+          success: true,
+          data: { user },
+        });
+      }
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'internal server error',
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+  @ApiResponse(
+    SwaggerResponses.OK(
+      { message: 'User updated successfully', success: true, user: {} },
+      'User updated successfully',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.internalServerError(
+      ExampleResponses.internalServerError,
+      'Internal server error',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.unauthorized(
+      ExampleResponses.unauthorized,
+      'Not Authorized ',
+    ),
+  )
+  @ApiResponse(
+    SwaggerResponses.forbidden(ExampleResponses.forbidden, 'Forbidden'),
+  )
+  @Put('me')
+  @ApiBody({ type: UpdateUserDto })
+  async updateMe(
+    @Body() dto: UpdateUserDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const { id } = req['user'];
+      const user = await this.userService.updateMe(id, dto);
+      if (user) {
+        return res.status(HttpStatus.OK).json({
+          message: 'successfully updated ',
           success: true,
           data: { user },
         });

@@ -144,3 +144,69 @@ export class DeleteUserDto {
   @IsEmail()
   email?: string;
 }
+
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Last name of the user',
+    example: 'Doe',
+  })
+  @IsString()
+  @IsOptional()
+  lastName: string;
+
+  @ApiProperty({
+    description: 'Current address of the user',
+    example: {
+      street: '123 Main St',
+      city: 'New York',
+      state: 'NY',
+      zip: '10001',
+      country: 'USA',
+    },
+  })
+  @IsObject()
+  @IsOptional()
+  currentAddress: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+  };
+
+  @ApiProperty({
+    description: 'Postal address of the user',
+    example: {
+      street: '456 Elm St',
+      city: 'Los Angeles',
+      state: 'CA',
+      zip: '90001',
+      country: 'USA',
+    },
+  })
+  @IsObject()
+  @IsOptional()
+  postalAddress: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+  };
+}

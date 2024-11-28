@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserSchema } from './schema/user.schema';
-import { DeleteUserDto } from './dto/user.dto';
+import { DeleteUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -47,5 +47,60 @@ export class UserService {
       );
     }
     return user;
+  }
+
+  async updateMe(id: string, dto: UpdateUserDto) {
+    const user = await this.userModel.findById(id);
+    if (!user || user.status === 'deleted') {
+      throw new HttpException(
+        { message: 'Not authorized', success: false },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    if (user.status === 'blocked') {
+      throw new HttpException('Not authorized', HttpStatus.FORBIDDEN);
+    } else if (dto.username && !dto.phone) {
+      const existUser = await this.userModel.findOne({
+        username: dto.username,
+      });
+      if (existUser && existUser._id.toString() !== id) {
+        throw new HttpException(
+          { message: 'This username is already exist', success: false },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    } else if (!dto.username && dto.phone) {
+      const existUser = await this.userModel.findOne({
+        phone: dto.phone,
+      });
+      if (existUser && existUser._id.toString() !== id) {
+        throw new HttpException(
+          { message: 'This phone number is already exist', success: false },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    } else if (dto.username && dto.phone) {
+      const existUser = await this.userModel.findOne({
+        $or: [
+          { email: dto.email },
+          { username: dto.username },
+          { phone: dto.phone },
+        ],
+      });
+      if (existUser && existUser._id.toString() !== id) {
+        throw new HttpException(
+          { message: 'User already exist', success: false },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(id, { ...dto }, { new: true })
+      .select('-password -__v');
+    if (!updatedUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return updatedUser;
   }
 }

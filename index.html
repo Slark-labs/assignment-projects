@@ -6,7 +6,6 @@
     <title>My Portfolio</title>
     <script src="https://kit.fontawesome.com/0c07f135f7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
     <header>
@@ -22,7 +21,7 @@
     </header>
     <main>
 
-        <div class="logo-container">
+        <div id="home" class="logo-container">
             <div id="logo">
                 <img src="/media/logo.png" alt="">
             </div>
@@ -32,66 +31,79 @@
             <p>Your one-stop solution for web development and design</p>
         </div>
 
-        <div class="Skills-container">
+        <div id="skills" class="skills-container">
             <h2>SKILLS</h2>
-            <div class="skills">
-                <h3>HTML</h3>
-                <p>Expertise in creating semantic and accessible HTML structures.</p>
-            </div>
-            <div class="skills">
-                <h3>CSS</h3>
-                <p>Proficient in CSS and CSS frameworks, including animations and responsive design.</p>
-            </div>
-            <div class="skills">
-                <h3>JavaScript</h3>
-                <p>Experienced with vanilla JavaScript and libraries like React and Vue.</p>
-            </div>
-            <div class="skills">
-                <h3>Node.js</h3>
-                <p>Backend development with Node.js and Express for scalable applications</p>
-            </div>
-            <div class="skills">
-                <h3>MongoDB</h3>
-                <p>Database management and optimization using MongoDB.</p>
-            </div>
-            <div class="skills">
-                <h3>Git</h3>
-                <p>Version control with Git and collaboration on GitHub and GitLab.</p>
-            </div>
+                <div class="skills-grid-container"> 
+                    <div class="skills">
+                        <h3>HTML</h3>
+                        <p>Expertise in creating semantic and accessible HTML structures.</p>
+                    </div>
+                    <div class="skills">
+                        <h3>CSS</h3>
+                        <p>Proficient in CSS and CSS frameworks, including animations and responsive design.</p>
+                    </div>
+                    <div class="skills">
+                        <h3>JavaScript</h3>
+                        <p>Experienced with vanilla JavaScript and libraries like React and Vue.</p>
+                    </div>
+                    <div class="skills">
+                        <h3>Node.js</h3>
+                        <p>Backend development with Node.js and Express for scalable applications</p>
+                    </div>
+                    <div class="skills">
+                        <h3>MongoDB</h3>
+                        <p>Database management and optimization using MongoDB.</p>
+                    </div>
+                    <div class="skills">
+                        <h3>Git</h3>
+                        <p>Version control with Git and collaboration on GitHub and GitLab.</p>
+                    </div>
+                </div> 
         </div>
 
-        <div class="portfolio-container">
+        <div id="portfolio" class="portfolio-container">
             <h2>PORTFOLIO</h2>
-            <div class="portfolio">
-                <h3>Project One</h3>
-                <p>A brief description of Project One, showcasing key features and technologies used.</p>
-            </div>
-            <div class="portfolio">
-                <h3>Project Two</h3>
-                <p>A brief description of Project Two, highlighting the challenges and solutions.</p>
-            </div>
-            <div class="portfolio">
-                <h3>Project Three</h3>
-                <p>A brief description of Project Three, focusing on the design and user experience.</p>
-            </div>
-            <div class="portfolio">
-                <h3>Project Four</h3>
-                <p>A brief description of Project Four, showcasing the technologies and approach.</p>
+            <div class="portfolio-grid-container">
+                <div class="portfolio">
+                    <img src="/media/Project-1.jpeg" alt="">
+                    <h3>Project One</h3>
+                    <p>A brief description of Project One, showcasing key features and technologies used.</p>
+                </div>
+                <div class="portfolio">
+                    <img src="/media/project-two.avif" alt="">
+                    <h3>Project Two</h3>
+                    <p>A brief description of Project Two, highlighting the challenges and solutions.</p>
+                </div>
+                <div class="portfolio">
+                    <img src="/media/project-three.jpg" alt="">
+                    <h3>Project Three</h3>
+                    <p>A brief description of Project Three, focusing on the design and user experience.</p>
+                </div>
+                <div class="portfolio">
+                    <img src="/media/project-four.jpeg" alt="">
+                    <h3>Project Four</h3>
+                    <p>A brief description of Project Four, showcasing the technologies and approach.</p>
+                </div>
             </div>
         </div>
-        <div class="Testimonials">
+        <div id="testimonials" class="testimonials">
             <h2>Testimonials</h2>
-            <p>"Amazing work! The project was delivered on time and exceeded our expectations."</p>
-            <h4>- Client A</h4>
-            <p>"Great attention to detail and a fantastic understanding of our requirements."</p>
-            <h4>- Client B</h4>
+            <blockquote>
+                     "Amazing work! The project was delivered on time and exceeded our expectations."
+            </blockquote>
+            <p>- Client A</p>
+            <blockquote>
+                "Great attention to detail and a fantastic understanding of our requirements."
+            </blockquote>
+            <p>- Client B</p>
         </div>
-        <div class="contact">
-            <form action="" method="post">
+        <div id="contact" class="contact">
+            <h2>Contact Me</h2>
+            <form action="" method="">
                 <input type="name" name="" id="" placeholder="Your Name">
                 <input type="email" name="" id="" placeholder="Your Email">
-                <textarea name="" id="" cols="30" rows="10" placeholder="Your Massage"></textarea>
-                <button type="reset">Send Massage</button>
+                <textarea name="" id="" placeholder="Your Massage"></textarea>
+                <button type="submit">Send Massage</button>
             </form>
         </div>
     </main>

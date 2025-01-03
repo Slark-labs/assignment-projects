@@ -1,7 +1,7 @@
 // const firstName = "Ahmad";//give firstName const value "Ahmad", const means it will not change after givin!!
 // const lastName = "Faiz";// give him also const value like first one.
 // const fullName = firstName + " " + lastName;//here i give fullName const value, 1st firstName and second is space and last one is lastName!!
-// console.log(fullName);// here it will be shown on bash terminal with command "node script.js" or "console.log(fullName);" in chrome console!!
+// grade(fullName);// here it will be shown on bash terminal with command "node script.js" or "grade(fullName);" in chrome console!!
 
 ////////////////////////////////////////////////////////
 
@@ -13,13 +13,13 @@
 
 // let a = 5;
 // let b = 10;
-// console.log(`Addition = ${a+b}`);
-// console.log(`Subtraction = ${a-b}`);
-// console.log(`Multiplication = ${a*b}`);
-// console.log(`Division = ${a/b}`);
+// grade(`Addition = ${a+b}`);
+// grade(`Subtraction = ${a-b}`);
+// grade(`Multiplication = ${a*b}`);
+// grade(`Division = ${a/b}`);
 
 // a *=5;// a*5 =25
-// console.log(a);
+// grade(a);
 
 ////////////////////////////////////////////////////////////
 
@@ -36,9 +36,57 @@
 //     alert("The is '0'");
 // }
 // if ( number>1 && number<100 ) {
-//     console.log("this number is between from 1 to 100");
+//     grade("this number is between from 1 to 100");
     
 // }
 
 /////////////////////////////////////////////////////////////
+//If-Else and Switch Case
+//1)- Create a program that asks for a user's grade and prints a message based on the grade using if-else.
+//2)- Reimplement the same program using switch-case. 
+   
+let marks = parseInt(prompt("enter numbers"));
+
+if ( marks > 100 ) {
+    grade = "invalid";
+    
+}else if ( marks >= 80 ) {
+    grade = "A+";
+    
+}else if (marks > 60) {
+    grade = "A";
+    
+}else if ( marks > 45 ) {
+    grade = "B";
+    
+}else if ( marks >= 33) {
+    grade = "C";
+    
+}else
+    grade = "Failed"
+
+switch (grade) {
+    case "invalid":
+        console.log("The value is Incorrect");
+    break;
+    case "A+":
+        console.log("Great Work");
+    break;
+    case "A":
+        console.log("Very Good");
+    break;
+    case "B":
+        console.log("Good");
+    break;
+    case "C":
+        console.log("you are passed");
+    break;
+
+    default:
+        console.log("try again next time!!");
+        
+        
+}
+    
+
 

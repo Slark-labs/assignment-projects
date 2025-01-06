@@ -45,48 +45,58 @@
 //1)- Create a program that asks for a user's grade and prints a message based on the grade using if-else.
 //2)- Reimplement the same program using switch-case. 
    
-let marks = parseInt(prompt("enter numbers"));
+// let marks = parseInt(prompt("enter numbers"));
 
-if ( marks > 100 ) {
-    grade = "invalid";
+// if ( marks > 100 ) {
+//     grade = "invalid";
     
-}else if ( marks >= 80 ) {
-    grade = "A+";
+// }else if ( marks >= 80 ) {
+//     grade = "A+";
     
-}else if (marks > 60) {
-    grade = "A";
+// }else if (marks > 60) {
+//     grade = "A";
     
-}else if ( marks > 45 ) {
-    grade = "B";
+// }else if ( marks > 45 ) {
+//     grade = "B";
     
-}else if ( marks >= 33) {
-    grade = "C";
+// }else if ( marks >= 33) {
+//     grade = "C";
     
-}else
-    grade = "Failed"
+// }else
+//     grade = "Failed"
 
-switch (grade) {
-    case "invalid":
-        console.log("The value is Incorrect");
-    break;
-    case "A+":
-        console.log("Great Work");
-    break;
-    case "A":
-        console.log("Very Good");
-    break;
-    case "B":
-        console.log("Good");
-    break;
-    case "C":
-        console.log("you are passed");
-    break;
+// switch (grade) {
+//     case "invalid":
+//         alert("The value is Incorrect");
+//     break;
+//     case "A+":
+//         alert("Great Work");
+//     break;
+//     case "A":
+//         alert("Very Good");
+//     break;
+//     case "B":
+//         alert("Good");
+//     break;
+//     case "C":
+//         alert("you are passed");
+//     break;
 
-    default:
-        console.log("try again next time!!");
+//     default:
+//         alert("try again next time!!");
         
         
-}
+// }
+
+////////////////////////////////////////////////////////////
+
+//Ternary Operator
+//1).Use the ternary operator to check if a number is even or odd.
+
+let num = prompt("enter Even or Odd");
+let evenodd = num % 2 === 0 ? "Even" : "Odd";
+alert(`This number is ${evenodd}`);
+
     
 
 
